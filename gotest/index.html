@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Info</title>
+</head>
+<body>
+    <form action="http://127.0.0.1:8080/process?hello=world&thread=123" method="post" enctype="multipart/form-data">
+        Name:<input type="text" name="stu_name"><br>
+        <input type="hidden" name="stu_id" value="1"><br>
+        Gender:<input type="radio" name="gender">male
+        <input type="radio" name="gender">female
+        <br>
+        Interest:<br>
+        <input type="checkbox" name="interest">football<br>
+        <input type="checkbox" name="interest">basketball<br>
+        <input type="checkbox" name="interest">volleyball<br>
+        <input type="checkbox" name="interest">tabletennis<br>
+        <input type="file" name="uploaded">
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
