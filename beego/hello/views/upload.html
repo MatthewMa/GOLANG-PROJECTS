@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload File</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.css">
+    <link rel="stylesheet" href="../static/css/bootstrap-theme.css">
+</head>
+<body>
+    <form method="post" action="upload.html" enctype="multipart/form-data" role="form">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" required name="username" autofocus class="form-control" id="username"/><br/>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="text" required name="password" class="form-control" id="password"/>
+        </div>
+        <div class="form-group">
+            UploadFile:<input type="file" name="uploadfile"/><br/>
+        </div>
+        <input type="submit" value="SUBMIT" class="btn btn-default">
+    </form>
+    <img src="../static/img/msh.jpg" class="img-responsive img-thumbnail" title="Beautiful Girl" width="200px" height="200px"/>
+</body>
+</html>
