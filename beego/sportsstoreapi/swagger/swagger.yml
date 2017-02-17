@@ -1,0 +1,247 @@
+swagger: "2.0"
+info:
+  title: beego Test API
+  description: beego has a very cool tools to autogenerate documents for your API
+  version: 1.0.0
+  termsOfService: http://beego.me/
+  contact:
+    email: astaxie@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+basePath: /v1
+paths:
+  /posts/:
+    get:
+      tags:
+      - posts
+      description: get Posts
+      operationId: PostsController.Get All
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          schema:
+            $ref: '#/definitions/.Posts'
+        "403": {}
+    post:
+      tags:
+      - posts
+      description: create Posts
+      operationId: PostsController.Post
+      parameters:
+      - in: body
+        name: body
+        description: body for Posts content
+        required: true
+        schema:
+          $ref: '#/definitions/.Posts'
+      responses:
+        "201":
+          description: '{int} models.Posts'
+        "403":
+          description: body is empty
+  /posts/{id}:
+    get:
+      tags:
+      - posts
+      description: get Posts by id
+      operationId: PostsController.Get One
+      parameters:
+      - in: path
+        name: id
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          schema:
+            $ref: '#/definitions/.Posts'
+        "403":
+          description: :id is empty
+    put:
+      tags:
+      - posts
+      description: update the Posts
+      operationId: PostsController.Put
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for Posts content
+        required: true
+        schema:
+          $ref: '#/definitions/.Posts'
+      responses:
+        "200":
+          schema:
+            $ref: '#/definitions/.Posts'
+        "403":
+          description: :id is not int
+    delete:
+      tags:
+      - posts
+      description: delete the Posts
+      operationId: PostsController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
+  /products/:
+    get:
+      tags:
+      - products
+      description: get Products
+      operationId: ProductsController.Get All
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          schema:
+            $ref: '#/definitions/.Products'
+        "403": {}
+    post:
+      tags:
+      - products
+      description: create Products
+      operationId: ProductsController.Post
+      parameters:
+      - in: body
+        name: body
+        description: body for Products content
+        required: true
+        schema:
+          $ref: '#/definitions/.Products'
+      responses:
+        "201":
+          description: '{int} models.Products'
+        "403":
+          description: body is empty
+  /products/{id}:
+    get:
+      tags:
+      - products
+      description: get Products by id
+      operationId: ProductsController.Get One
+      parameters:
+      - in: path
+        name: id
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          schema:
+            $ref: '#/definitions/.Products'
+        "403":
+          description: :id is empty
+    put:
+      tags:
+      - products
+      description: update the Products
+      operationId: ProductsController.Put
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for Products content
+        required: true
+        schema:
+          $ref: '#/definitions/.Products'
+      responses:
+        "200":
+          schema:
+            $ref: '#/definitions/.Products'
+        "403":
+          description: :id is not int
+    delete:
+      tags:
+      - products
+      description: delete the Products
+      operationId: ProductsController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
+definitions:
+  .Posts:
+    type: object
+  .Products:
+    type: object
+tags:
+- name: posts
+  description: |
+    PostsController operations for Posts
+- name: products
+  description: |
+    ProductsController operations for Products

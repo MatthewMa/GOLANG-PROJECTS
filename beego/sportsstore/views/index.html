@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html ng-app="sportsStore">
+<head>
+    <title>SportsStore</title>
+    <base href="/">
+    <script src="../static/js/angular.js"></script>
+    <link rel="stylesheet" href="../static/css/bootstrap.css">
+    <link rel="stylesheet" href="../static/css/bootstrap-theme.css">
+    <script>
+        angular.module("sportsStore", ["customFilters", "cart", "ngRoute"])
+            .config(function ($routeProvider, $locationProvider) {
+
+                $routeProvider.when("/checkout", {
+                    templateUrl: "/static/js/views/checkoutSummary.html"
+                });
+
+                $routeProvider.when("/products", {
+                    templateUrl: "/static/js/views/productList.html"
+                });
+
+                $routeProvider.when("/placeorder",{
+                    templateUrl:"/static/js/views/placeorder.html"
+                });
+                $routeProvider.when("/complete",{
+                    templateUrl:"/static/js/views/thankYou.html"
+                });
+                $routeProvider.otherwise({
+                    templateUrl: "/static/js/views/productList.html"
+                });
+                $locationProvider.html5Mode(true);
+            });
+    </script>
+    <script src="../static/js/controllers/sportsStore.js"></script>
+    <script src="../static/js/filters/customFilters.js"></script>
+    <script src="../static/js/controllers/productListControllers.js"></script>
+    <script src="../static/js/components/cart/cart.js"></script>
+    <script src="../static/js/ngmodules/angular-route.js"></script>
+    <script src="../static/js/controllers/checkoutController.js"></script>
+</head>
+<body ng-controller="sportsStoreCtrl">
+<div class="navbar navbar-inverse">
+    <a class="navbar-brand" href="#">SPORTS STORE</a>
+    <cart-summary/>
+</div>
+<div class="alert alert-danger" ng-show="data.error">
+    Error{{data.error.status}}. The product data cannot load!
+    <a href="index.html" class="alert-link">Please try again</a>
+</div>
+<ng-view></ng-view>
+</body>
+</html>
