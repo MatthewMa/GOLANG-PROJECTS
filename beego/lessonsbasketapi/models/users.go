@@ -165,3 +165,13 @@ func ValidateUser(user *Users) (err error) {
 	return errors.New("Email or password is not correct!")
 
 }
+
+//Get profile by token
+func GetProfileByToken(token string) (v *Users, err error) {
+	o := orm.NewOrm()
+	v = &Users{Token: token}
+	if err = o.Read(v); err == nil {
+		return v, nil
+	}
+	return nil, err
+}

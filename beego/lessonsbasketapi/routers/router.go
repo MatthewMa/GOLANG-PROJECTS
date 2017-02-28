@@ -72,4 +72,7 @@ func init() {
 	beego.Router("/v1/lessons/:lid([0-9]+)/screens/:sid([0-9]+)/options", &controllers.LessonScreenOptionController{}, "get,post:GetOptionsByLessonAndScreen")
 	beego.Router("/v1/lessons/:lid([0-9]+)/answers", &controllers.LessonAnswerController{}, "post:PostLessonAnswer")
 	beego.Router("/auth/login", &controllers.LoginController{}, "post:Login")
+	beego.Router("/auth/profile/:token", &controllers.LoginController{}, "get:GetProfile")
+	beego.Router("/auth/logout/:token", &controllers.LoginController{}, "get:Logout")
+	beego.Router("/auth/register", &controllers.LoginController{}, "post:Register")
 }

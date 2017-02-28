@@ -3,6 +3,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -11,6 +12,8 @@ import (
 	"github.com/astaxie/beego"
 
 	"github.com/matthew/beego/lessonsbasketapi/tools"
+
+	"github.com/astaxie/beego/validation"
 )
 
 type LessonScreenController struct {
@@ -38,12 +41,23 @@ type LoginResult struct {
 	Token  string "json:token"
 }
 
+type JsonError struct {
+	ErrorStatus string "json:result"
+}
+
+type JsonResult struct {
+	Result string "json:result"
+}
+
 func (c *LessonScreenController) GetScreensByLesson() {
 	idStr := c.Ctx.Input.Param(":id") //lesson id
 	id, _ := strconv.Atoi(idStr)
 	v, err := models.GetScreensByLessonId(id)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		jsonerror := &JsonError{
+			ErrorStatus: err.Error(),
+		}
+		c.Data["json"] = jsonerror
 	} else {
 		c.Data["json"] = v
 	}
@@ -57,7 +71,10 @@ func (c *LessonScreenController) GetScreenByLessonAndScreen() {
 	sid, _ := strconv.Atoi(sidStr)
 	v, err := models.GetScreenByLessonAndScreenId(lid, sid)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		jsonerror := &JsonError{
+			ErrorStatus: err.Error(),
+		}
+		c.Data["json"] = jsonerror
 	} else {
 		c.Data["json"] = v
 	}
@@ -71,7 +88,10 @@ func (c *LessonScreenController) GetScreenByLessonAndPosition() {
 	position, _ := strconv.Atoi(positionStr)
 	v, err := models.GetScreenByLessonAndPositionId(id, position)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		jsonerror := &JsonError{
+			ErrorStatus: err.Error(),
+		}
+		c.Data["json"] = jsonerror
 	} else {
 		c.Data["json"] = v
 	}
@@ -86,7 +106,10 @@ func (c *LessonScreenController) GetNextScreenByScreen() {
 	sid++
 	v, err := models.GetScreenByLessonAndScreenId(lid, sid)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		jsonerror := &JsonError{
+			ErrorStatus: err.Error(),
+		}
+		c.Data["json"] = jsonerror
 	} else {
 		c.Data["json"] = v
 	}
@@ -100,7 +123,10 @@ func (c *LessonScreenOptionController) GetOptionsByLessonAndScreen() {
 	sid, _ := strconv.Atoi(sidStr)
 	v, err := models.GetOptionsByLessonAndScreenId(lid, sid)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		jsonerror := &JsonError{
+			ErrorStatus: err.Error(),
+		}
+		c.Data["json"] = jsonerror
 	} else {
 		c.Data["json"] = v
 	}
@@ -120,10 +146,16 @@ func (c *LessonAnswerController) PostLessonAnswer() {
 			}
 			c.Data["json"] = result
 		} else {
-			c.Data["json"] = err.Error()
+			jsonerror := &JsonError{
+				ErrorStatus: err.Error(),
+			}
+			c.Data["json"] = jsonerror
 		}
 	} else {
-		c.Data["json"] = err.Error()
+		jsonerror := &JsonError{
+			ErrorStatus: err.Error(),
+		}
+		c.Data["json"] = jsonerror
 	}
 	c.ServeJSON()
 }
@@ -138,12 +170,108 @@ func (c *LoginController) Login() {
 		token := tools.GenerateToken()
 		c.SetSession("token", token)
 		fmt.Println("email:", c.GetSession("token"))
-		loginresult.Result = "success"
-		loginresult.Token = token
+		//update token
+		user.Token = token
+		err = models.UpdateUsersById(user)
+		if err == nil {
+			loginresult.Result = "success"
+			loginresult.Token = token
+		} else {
+			loginresult.Result = "fail"
+			loginresult.Token = ""
+		}
+
 	} else {
 		loginresult.Result = "fail"
 		loginresult.Token = ""
 	}
 	c.Data["json"] = loginresult
+	c.ServeJSON()
+}
+
+func (c *LoginController) GetProfile() {
+	token := c.Ctx.Input.Param(":token")
+	sessionToken := c.GetSession("token")
+	if sessionToken == nil {
+		//session expires
+		jsonerror := &JsonError{
+			ErrorStatus: errors.New("Token has expired,please login again!").Error(),
+		}
+		c.Data["json"] = jsonerror
+	} else {
+		if token == sessionToken.(string) {
+			//Get profile
+			profile, err := models.GetProfileByToken(token)
+			if err == nil {
+				c.Data["json"] = profile
+			} else {
+				jsonerror := &JsonError{
+					ErrorStatus: err.Error(),
+				}
+				c.Data["json"] = jsonerror
+			}
+		} else {
+			jsonerror := &JsonError{
+				ErrorStatus: errors.New("Token is not correct,please login again!").Error(),
+			}
+			c.Data["json"] = jsonerror
+		}
+	}
+	c.ServeJSON()
+}
+
+func (c *LoginController) Logout() {
+	token := c.Ctx.Input.Param(":token")
+	sessionToken := c.GetSession("token")
+	if sessionToken == nil {
+		//session expires
+		jsonerror := &JsonResult{
+			Result: "fail",
+		}
+		c.Data["json"] = jsonerror
+	} else {
+		if token == sessionToken.(string) {
+			//Delete token
+			c.DelSession("token")
+			jsonerror := &JsonResult{
+				Result: "success",
+			}
+			c.Data["json"] = jsonerror
+		} else {
+			jsonerror := &JsonResult{
+				Result: "fail",
+			}
+			c.Data["json"] = jsonerror
+		}
+	}
+	c.ServeJSON()
+}
+
+//user register and validate
+func (c *LoginController) Register() {
+	var v models.Users
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
+		//check validity todo:valid form according to requirement
+		valid := validation.Validation{}
+		valid.Required(v.Firstname, "firstname")
+
+		if _, err := models.AddUsers(&v); err == nil {
+			c.Ctx.Output.SetStatus(201)
+			jsonerror := &JsonResult{
+				Result: "success",
+			}
+			c.Data["json"] = jsonerror
+		} else {
+			jsonerror := &JsonResult{
+				Result: "fail",
+			}
+			c.Data["json"] = jsonerror
+		}
+	} else {
+		jsonerror := &JsonResult{
+			Result: "fail",
+		}
+		c.Data["json"] = jsonerror
+	}
 	c.ServeJSON()
 }
